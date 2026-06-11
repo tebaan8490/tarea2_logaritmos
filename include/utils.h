@@ -1,7 +1,9 @@
-# include <models.h>
+#pragma once
+#include <bits/stdc++.h>
+#include "models.h"
 
 namespace Rotations {
-    Node* zig(Node* node);
+    Node* rotateLeft(Node* node);
 
-    Node* zag(Node* node);
+    Node* rotateRight(Node* node);
 }
