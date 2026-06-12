@@ -25,4 +25,6 @@ struct SplayTree {
     SplayTree() : root(nullptr){}
 
     void insert(uint32_t x);
+    bool search(uint32_t x);
+    void splay(Node* node);
 };
