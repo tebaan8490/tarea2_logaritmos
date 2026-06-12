@@ -23,4 +23,6 @@ private:
 struct SplayTree {
     Node* root;
     SplayTree() : root(nullptr){}
+
+    void insert(uint32_t x);
 };
