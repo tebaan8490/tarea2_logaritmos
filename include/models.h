@@ -1,8 +1,30 @@
+#include <cstdint>
 #pragma once
-#include <bits/stdc++.h>
 
 struct Node {
-    int x;
+    uint32_t value;
+    int height;
+    int balance_factor;
     Node* left;
     Node* right;
+    Node* parent;
+};
+
+struct AVLTree {
+    Node* root;
+    AVLTree(): root(nullptr) {}
+    void insert(uint32_t x);
+    bool search(uint32_t x);
+
+private:
+    Node* insertRec(Node* node, uint32_t x);
+};
+
+struct SplayTree {
+    Node* root;
+    SplayTree() : root(nullptr){}
+
+    void insert(uint32_t x);
+    bool search(uint32_t x);
+    void splay(Node* node);
 };
