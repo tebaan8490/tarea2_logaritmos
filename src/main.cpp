@@ -28,5 +28,20 @@ int main() {
     std::cout << "Busca 7: " << avl.search(7) << "\n";
     std::cout << "Busca 99: " << avl.search(99) << "\n";
 
+    SplayTree sp;
+    for (uint32_t i = 1; i <= 10; i++) sp.insert(i);
+
+    std::cout << "\n[Splay] Inorden: ";
+    inOrden(sp.root);
+    std::cout << "\n";
+
+    sp.search(3);
+    std::cout << "[Splay] raiz tras buscar 3: " << sp.root->value << "\n";
+    sp.search(8);
+    std::cout << "[Splay] raiz tras buscar 8: " << sp.root->value << "\n";
+    std::cout << "[Splay] busca inexistente 99 (no debe crashear)\n";
+    sp.search(99);
+    std::cout << "[Splay] raiz tras buscar 99: " << sp.root->value << "\n";
+
     return 0;
 }
