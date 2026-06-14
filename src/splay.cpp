@@ -3,49 +3,96 @@
 #include <algorithm>
 
 
-void SplayTree::insert(uint32_t x){
-    if (root ==nullptr){
-        root = new Node{
-            x,1,0, nullptr, nullptr,nullptr
-        };
-    return;
-    }
-    Node* actual = root;
-    Node* padre= nullptr;
-    while (actual!=nullptr){
-        padre= actual;
-        if (x<actual->value)
-            actual = actual->left;
-        else if (x>actual->value)
-            actual= actual->right;
-        else {
-            splay(actual);
-            return;
+void SplayTree::splay(uint32_t x) {
+    this->root = splayRec(this->root, x);
+}
+
+Node* SplayTree::splayRec(Node* root, uint32_t x) {
+    if (root == nullptr || root->value == x)
+        return root;
+
+    if (x < root->value) {
+        if (root->left == nullptr)
+            return root;
+
+        if (x < root->left->value) {
+            root->left->left = splayRec(root->left->left, x);
+            root = zig(root);
+        } else if (x > root->left->value) {
+            root->left->right = splayRec(root->left->right, x);
+            if (root->left->right != nullptr)
+                root->left = zag(root->left);
         }
+
+        return (root->left == nullptr) ? root : zig(root);
+    }
+    else {
+        if (root->right == nullptr)
+            return root;
+
+        if (x > root->right->value) {
+            root->right->right = splayRec(root->right->right, x);
+            root = zag(root);
+        } else if (x < root->right->value) {
+            root->right->left = splayRec(root->right->left, x);
+            if (root->right->left != nullptr)
+                root->right = zig(root->right);
+        }
+        return (root->right == nullptr) ? root : zag(root);
+    }
+}
+
+void SplayTree::insert(uint32_t x) {
+            insertRec(this->root, x);
+}
+
+Node* SplayTree::insertRec(Node* root, uint32_t x) {
+    if (root == nullptr) {
+        this->root = new Node{x, 0, 0, nullptr, nullptr, nullptr};
+        return this->root;
     }
 
-    Node* nuevo = new Node{x,1,0,nullptr,nullptr,nullptr};
-    nuevo->parent = padre;
-    if (x < padre->value)
-        padre->left = nuevo;
-    else
-        padre->right = nuevo;
-    splay(nuevo); 
-}
-
-bool SplayTree::search(uint32_t x){
-    Node* actual = root;
-    Node* ultimo = nullptr;
-    while (actual != nullptr){
-        ultimo = actual;
-        if (x == actual->value){ splay(actual); return true; }
-        if (x < actual->value) actual = actual->left;
-        else                   actual = actual->right;
+    if (root->value >= x) {
+        if (root->left == nullptr) {
+            root->left = new Node{x, 0, 0, nullptr, nullptr, nullptr};
+            splay(x);
+            return root->left;
+        }
+           return insertRec(root->left, x);
     }
-    if (ultimo != nullptr) splay(ultimo);
-    return false;
+    else {
+        if (root->right == nullptr) {
+            root->right = new Node{x, 0, 0, nullptr, nullptr, nullptr};
+            splay(x);
+            return root->right;
+        }
+        return insertRec(root->right, x);
+    }
 }
 
-void SplayTree::splay(Node *node){
-    
+Node* SplayTree::search(uint32_t x) {
+    if (this->root == nullptr) return nullptr;
+    Node* searched = searchRec(this->root, x);
+    splay(searched->value);
+    return this->root;
 }
+
+Node* SplayTree::searchRec(Node* root, uint32_t x) {
+
+    if (root->value == x) {
+        return root;
+    }
+    else if (root->value > x) {
+        if (root->left == nullptr)
+            return root;
+        else 
+            return searchRec(root->left, x);
+    }
+    else {
+        if (root->right == nullptr)
+            return root;
+        else 
+            return searchRec(root->right, x);
+    }
+}
+
