@@ -14,7 +14,6 @@
 using Clock = std::chrono::high_resolution_clock;
 using Duration = std::chrono::duration<double, std::milli>;
 
-static double lambda = 0.025;
 static const size_t c = 3;
 
 template <typename F>
@@ -24,12 +23,11 @@ double medirTiempo(F&& accion) {
     return Duration(Clock::now() - inicio).count();
 }
 
-std::vector<double> PesosSesgados(size_t N) {
+std::vector<double> construirPesosSesgados(size_t N) {
     std::vector<double> pesos;
     pesos.reserve(N);
     for (size_t i = 0; i < N; ++i) {
-        double peso = std::exp(-lambda * static_cast<double>(i)) * (1.0 - std::exp(-lambda)) / (1.0 - std::exp(-lambda * N));
-        pesos.push_back(peso);
+        pesos.push_back(funcionProbabilidad(i, N));
     }
     return pesos;
 }
@@ -119,9 +117,9 @@ ResultadoExperimento ejecutarEscenario(size_t N,
         std::shuffle(insertionValues.begin(), insertionValues.end(), rng);
     }
 
-    std::vector<double> biasedWeights = PesosSesgados(N);
-    std::uniform_int_distribution<size_t> uniformDist(0, N - 1);
-    std::discrete_distribution<size_t> biasedDist(biasedWeights.begin(), biasedWeights.end());
+    std::vector<double> pesosSesgados = construirPesosSesgados(N);
+    std::uniform_int_distribution<size_t> distribucionUniforme(0, N - 1);
+    std::discrete_distribution<size_t> distribucionSesgada(pesosSesgados.begin(), pesosSesgados.end());
 
     AVLTree avl;
     SplayTree splay;
@@ -129,19 +127,19 @@ ResultadoExperimento ejecutarEscenario(size_t N,
     double avlInsertMs = medirInsercion(avl, insertionValues);
     double splayInsertMs = medirInsercion(splay, insertionValues);
 
-    double avlSearchMs = medirBusqueda(avl, M, dataset, rng, busquedaSesgada, uniformDist, biasedDist);
-    double splaySearchMs = medirBusqueda(splay, M, dataset, rng, busquedaSesgada, uniformDist, biasedDist);
+    double avlSearchMs = medirBusqueda(avl, M, dataset, rng, busquedaSesgada, distribucionUniforme, distribucionSesgada);
+    double splaySearchMs = medirBusqueda(splay, M, dataset, rng, busquedaSesgada, distribucionUniforme, distribucionSesgada);
 
-    ResultadoExperimento result;
-    result.N = N;
-    result.M = M;
-    result.insercion = insercionOrdenada ? "Ordered" : "Random";
-    result.busqueda = busquedaSesgada ? "Biased" : "Uniform";
-    result.avlInsercionMs = avlInsertMs;
-    result.avlBusquedaMs = avlSearchMs;
-    result.splayInsercionMs = splayInsertMs;
-    result.splayBusquedaMs = splaySearchMs;
-    return result;
+    ResultadoExperimento resultado;
+    resultado.N = N;
+    resultado.M = M;
+    resultado.insercion = insercionOrdenada ? "Ordenada" : "Aleatoria";
+    resultado.busqueda = busquedaSesgada ? "Sesgada" : "Uniforme";
+    resultado.avlInsercionMs = avlInsertMs;
+    resultado.avlBusquedaMs = avlSearchMs;
+    resultado.splayInsercionMs = splayInsertMs;
+    resultado.splayBusquedaMs = splaySearchMs;
+    return resultado;
 }
 
 void ejecutarExperimentosBase(std::mt19937& rng) {
@@ -222,7 +220,7 @@ void ejecutarTeoremaWorkingSet(size_t N, std::mt19937& rng) {
         splay.insert(x);
     }
 
-    std::vector<size_t> tamanosWorkingSet = {10, 100, 1000, 10000, 100000, 1000000};
+    std::vector<size_t> tamWorkingSet = {10, 100, 1000, 10000, 100000, 1000000};
     size_t multiplicador = 1;
     for (size_t i = 0; i < c; ++i) {
         multiplicador *= 10;
@@ -235,7 +233,7 @@ void ejecutarTeoremaWorkingSet(size_t N, std::mt19937& rng) {
               << "\n";
     std::cout << std::string(44, '-') << "\n";
 
-    for (size_t W : tamanosWorkingSet) {
+    for (size_t W : tamWorkingSet) {
         if (W > N) {
             break;
         }
