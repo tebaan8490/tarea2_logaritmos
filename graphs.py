@@ -2,13 +2,20 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 #================================
-# Tiempos de búsqueda
+# Tiempos de búsqueda (escenarios base)
 #================================
 
-df = pd.read_csv("search_times.csv")
+df = pd.read_csv("resultados/base_por_busqueda.csv")
 
 Ns = [1024, 16384]
-escenarios = ["A", "B", "C", "D"]
+
+# Cada escenario base es una combinación de tipo de inserción y búsqueda.
+escenarios = {
+    "A": ("Aleatoria", "Uniforme"),
+    "B": ("Aleatoria", "Sesgada"),
+    "C": ("Ordenada", "Uniforme"),
+    "D": ("Ordenada", "Sesgada"),
+}
 
 for N in Ns:
 
@@ -20,38 +27,40 @@ for N in Ns:
 
     axes = axes.flatten()
 
-    for idx, escenario in enumerate(escenarios):
+    for idx, (escenario, (insercion, busqueda)) in enumerate(escenarios.items()):
 
         ax = axes[idx]
 
         datos = df[
             (df["N"] == N)
             &
-            (df["scenario"] == escenario)
+            (df["insercion"] == insercion)
+            &
+            (df["busqueda"] == busqueda)
         ]
 
-        for arbol in ["AVL", "SPLAY"]:
+        for arbol in ["AVL", "Splay"]:
 
             sub = datos[
-                datos["tree"] == arbol
+                datos["estructura"] == arbol
             ]
 
             ax.plot(
-                sub["search_id"],
-                sub["time_ms"],
+                sub["busquedas_acumuladas"],
+                sub["ns_por_busqueda"],
                 label=arbol
             )
 
         ax.set_title(
-            f"Escenario {escenario}"
+            f"Escenario {escenario}: {insercion} / {busqueda}"
         )
 
         ax.set_xlabel(
-            "Número de búsqueda"
+            "Búsquedas acumuladas"
         )
 
         ax.set_ylabel(
-            "Tiempo (ms)"
+            "Tiempo por búsqueda (ns)"
         )
 
         ax.grid(True)
@@ -75,21 +84,24 @@ for N in Ns:
 #================================
 
 df = pd.read_csv(
-    "sequential_access.csv"
+    "resultados/teorema_secuencial.csv"
 )
+
+avl = df[df["estructura"] == "AVL"]
+splay = df[df["estructura"] == "Splay"]
 
 plt.figure(figsize=(8,5))
 
 plt.plot(
-    df["m"],
-    df["avl_ms"],
+    avl["m"],
+    avl["tiempo_ms"],
     marker="o",
     label="AVL"
 )
 
 plt.plot(
-    df["m"],
-    df["splay_ms"],
+    splay["m"],
+    splay["tiempo_ms"],
     marker="o",
     label="Splay"
 )
@@ -117,21 +129,24 @@ plt.show()
 # Working set Theorem
 #================================
 df = pd.read_csv(
-    "working_set.csv"
+    "resultados/teorema_working_set.csv"
 )
+
+avl = df[df["estructura"] == "AVL"]
+splay = df[df["estructura"] == "Splay"]
 
 plt.figure(figsize=(8,5))
 
 plt.plot(
-    df["W"],
-    df["avl_ms"],
+    avl["W"],
+    avl["tiempo_total_ms"],
     marker="o",
     label="AVL"
 )
 
 plt.plot(
-    df["W"],
-    df["splay_ms"],
+    splay["W"],
+    splay["tiempo_total_ms"],
     marker="o",
     label="Splay"
 )
