@@ -23,7 +23,7 @@ Node* AVLTree::insertRec(Node* node, uint32_t x){
     }
     else if (x > node->value){
         node->right = insertRec(node->right,x);
-        node->right->parent=node;
+        node->right->parent = node;
     } else {
         return node;
     }
