@@ -24,12 +24,9 @@ struct SplayTree {
     Node* root;
     SplayTree() : root(nullptr){}
 
-    void splay(uint32_t x);
     void insert(uint32_t x);
-    Node* search(uint32_t x);
+    bool search(uint32_t x);
 
 private:
-    Node* insertRec(Node* root, uint32_t x);
-    Node* searchRec(Node* root, uint32_t x);
-    Node* splayRec(Node* root, uint32_t x);
+    void splay(Node* node);   // bottom-up iterativo (dobles + posible simple)
 };

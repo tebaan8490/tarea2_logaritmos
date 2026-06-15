@@ -29,6 +29,5 @@ std::vector<uint32_t> generarDataset(size_t N) {
 }
 
 double funcionProbabilidad(uint32_t x, size_t N) {
-    // lambda entre [0.001, 0.05], elegimos 0.025
     return std::exp(-0.025 * x) * ((1-std::exp(-0.025))/(1-std::exp(-0.025 * N)));
 }

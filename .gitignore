@@ -1,11 +1,11 @@
-# Artefactos de compilación
 build/
 *.o
 
-# Ejecutables
 program
 program_dbg
 program_o2
 
-# Núcleos de depuración
 core
+
+resultados/
+*.csv

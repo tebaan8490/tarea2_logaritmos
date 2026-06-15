@@ -11,6 +11,7 @@ void updateHeight(Node *n){
 
 void AVLTree::insert(uint32_t x){
     root = insertRec(root,x);
+    root->parent = nullptr;
 }
 
 Node* AVLTree::insertRec(Node* node, uint32_t x){
@@ -18,9 +19,11 @@ Node* AVLTree::insertRec(Node* node, uint32_t x){
 
     if (x<node->value){
         node->left= insertRec(node->left,x);
+        node->left->parent = node;
     }
     else if (x > node->value){
         node->right = insertRec(node->right,x);
+        node->right->parent = node;
     } else {
         return node;
     }
@@ -29,13 +32,13 @@ Node* AVLTree::insertRec(Node* node, uint32_t x){
     int b = bf(node);
     Node* nuevaRaiz = node;
     if (b == 2){
-        if (bf(node->left) < 0) node->left = zag(node->left);
+        if (bf(node->left) < 0) zag(node->left);
         nuevaRaiz = zig(node);
         updateHeight(nuevaRaiz->left);
         updateHeight(nuevaRaiz->right);
         updateHeight(nuevaRaiz);
     } else if (b == -2){
-        if (bf(node->right) > 0) node->right = zig(node->right);
+        if (bf(node->right) > 0) zig(node->right);
         nuevaRaiz = zag(node);
         updateHeight(nuevaRaiz->left);
         updateHeight(nuevaRaiz->right);
