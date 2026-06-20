@@ -2,9 +2,29 @@
 #include <rotations.h>
 #include <algorithm>
 
+/**
+* @brief Función que muestra la altura de un nodo
+* 
+* @param n Nodo al cual se muestra su campo "height"
+* @return La altura del nodo
+*/
 int height(Node *n){return n==nullptr ? 0: n->height;}
+
+/**
+* @brief Calculador del Balance Factor de un nodo
+* 
+* @param n Nodo al cual se calcula su BF
+* @return El Balance Factor del nodo
+*/
 int bf(Node* n){return height(n->left)-height(n->right);}
 
+
+/**
+* @brief Actualiza la altura de un nodo
+* 
+* @param n Nodo al cual se le actualiza su altura
+* @return Actualización de su altura
+*/
 void updateHeight(Node *n){
     n->height = 1 + std::max(height(n->left), height(n->right));
 }

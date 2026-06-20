@@ -9,6 +9,15 @@
 #include <chrono>       
 #include <unordered_set>
 
+
+/**
+* @brief Inicia un experimento, creando un dataset nuevo y con la función probabilidad
+*
+* Resultó sin uso
+* 
+* @param n Tamaño del dataset a crear
+* @return
+*/
 void init_experiment(size_t n) {
     std::vector<uint32_t> dataset = generarDataset(n);
     
